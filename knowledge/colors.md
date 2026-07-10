@@ -1,8 +1,15 @@
 ---
 type: Token Guideline
-title: Color
+title: Colors
 desc: Rationale and usage judgment for the accent color
 ---
+
+# System conventions
+
+Components only reference semantic tokens. Primitive ramps and raw OKLCH/hex values never
+appear in component code. Tokens with different meanings stay independent even while
+their values coincide: `color.brand.accent` and `color.action.primary.background` may
+both resolve to orange-9 today and must remain separately changeable.
 
 # Accent
 
@@ -38,8 +45,12 @@ Active tab underlines, selected radio/checkbox fills, current-step indicators, a
 filter markers. Color is never the only signal: pair with position, shape,
 iconography, text weight, or an explicit label.
 
-## Variants
+# Variants
 
 The approved set is hover (tokenized as `accent.hover`), pressed, and text — the
 latter two pending token definitions. Disabled controls drop the saturated accent
 because it keeps reading as actionable → [disabled](./disabled.md).
+
+## Hover
+
+Hover is ...
