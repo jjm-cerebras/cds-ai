@@ -2,15 +2,51 @@
 
 # CDS AI
 
-This repository pairs OKF guidance with DTCG design tokens so implementation metadata and usage rules are ready for AI to use
+AI-ready design system pairs OKF guidance with DTCG design tokens
 
 <https://github.com/GoogleCloudPlatform/knowledge-catalog> \
 <https://www.designtokens.org>
 
 ### Repo structure
 
-**Tokens** \
-machine-readable token values, definitions, and concise purpose
-
 **Knowledge** \
-detailed usage guidance, examples, accessibility notes, and related design rules
+- Detailed usage guidance, examples, accessibility, and related design rules
+ 
+**Tokens** \
+- Machine-readable token values, definitions, and concise purpose
+
+### Naming convention
+
+**Slot vocabularies are disjoint**
+
+The category, element, priority, and state lists share no term, and a term
+is never reassigned between slots. Terms are single lowercase words — `-`
+appears only as the delimiter. This is what lets a name with omitted slots
+parse by registry lookup to exactly one reading.
+
+**Primitive**
+[category?]-[element]-[ramp]
+- category: color, size, space, weight, height, width, radius, opacity, shadow, z-index, etc
+- element: orange, text, etc
+- ramp: 500, small, semibold, etc
+- ? = optional
+
+examples
+- color-orange-500
+- orange-500
+- text-medium
+- tracking-small
+
+**Semantic**
+[category]-[element]-[tier?]-[state?]
+- category: color, size, space, weight, height, width, radius, opacity, shadow, z-index, etc
+- element: background, text, icon, border, etc
+- tier: primary, secondary, tertiaey, utility, ghost, etc
+- state: default, active, disabled, hover, etc
+- ? = optional
+
+examples
+- color-background-primary-hover
+- color-background-secondary (no state = default)
+- color-text-disabled (skip tier)
+- size-icon (category + element only)
