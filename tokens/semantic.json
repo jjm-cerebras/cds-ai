@@ -8,6 +8,9 @@
 		"accent-hover": {
 			"$value": "{orange-8}",
 			"$description": "Hover state of accent-base"
+		},
+		"disabled-base": {
+			...
 		}
 	}
 }
