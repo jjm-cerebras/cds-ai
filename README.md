@@ -1,4 +1,6 @@
-# CDS AI - WORK IN PROGRESS
+# WORK IN PROGRESS
+
+# CDS AI
 
 This repository pairs OKF guidance with DTCG design tokens so implementation metadata and usage rules are ready for AI to use
 
