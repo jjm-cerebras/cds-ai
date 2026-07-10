@@ -1,5 +1,5 @@
 {
-	"color": {
+	"primitive": {
 		"$type": "color",
 		"orange-9": {
 			"$value": "oklch(0.661, 0.196, 37.71)",
