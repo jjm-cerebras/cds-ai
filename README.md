@@ -19,10 +19,7 @@ AI-ready design system pairs OKF guidance with DTCG design tokens
 
 **Slot vocabularies are disjoint**
 
-The category, element, priority, and state lists share no term, and a term
-is never reassigned between slots. Terms are single lowercase words — `-`
-appears only as the delimiter. This is what lets a name with omitted slots
-parse by registry lookup to exactly one reading.
+The category, element, priority, and state lists share no term, and a term is never reassigned between slots. Terms are single lowercase words and `-` appears only as the delimiter. This is what lets a name with omitted slots parse by registry lookup to exactly one reading.
 
 **Primitive**
 [category?]-[element]-[ramp]
