@@ -1,10 +1,7 @@
----
-type: Token Guideline
-title: Colors
-desc: Rationale and usage judgment for the accent color
----
+# Color Tokens Guideline
+Rationale and usage judgment for the accent color
 
-# System conventions
+## System conventions
 
 Components only reference semantic tokens. Primitive ramps and raw OKLCH/hex values never
 appear in component code. Tokens with different meanings stay independent even while
