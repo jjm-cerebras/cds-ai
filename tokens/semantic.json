@@ -1,16 +1,17 @@
 {
 	"semantic": {
 		"$type": "color",
-		"accent-base": {
-			"$value": "{orange-9}",
+		"background-accent": {
+			"$value": "{orange-500}",
 			"$description": "Primary accent color for actions"
 		},
-		"accent-hover": {
-			"$value": "{orange-8}",
-			"$description": "Hover state of accent-base"
+		"background-accent-hover": {
+			"$value": "{orange-300}",
+			"$description": "Hover state of background-accent"
 		},
-		"disabled-base": {
-			...
+		"color-text-disabled": {
+			"$value": "{gray-500}",
+			"$description": "Hover state of accent-base"
 		}
 	}
 }
