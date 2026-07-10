@@ -1,0 +1,13 @@
+{
+	"semantic": {
+		"$type": "color",
+		"accent-base": {
+			"$value": "{orange-9}",
+			"$description": "Primary accent color for actions"
+		},
+		"accent-hover": {
+			"$value": "{orange-8}",
+			"$description": "Hover state of accent-base"
+		}
+	}
+}
