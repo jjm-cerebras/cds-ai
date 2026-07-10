@@ -8,6 +8,9 @@
 		"orange-8": {
 			"$value": "oklch(0.776, 0.145, 49.61)",
 			"$description": "hover color"
+		},
+		"orange-7": {
+			...
 		}
 	}
 }
