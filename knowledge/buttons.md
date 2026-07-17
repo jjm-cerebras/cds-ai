@@ -1,5 +1,4 @@
-# DESIGN KNOWLEDGE
-## Component: Button
+# Component: Button
 
 > Status: Draft
 > Confidence: Medium
