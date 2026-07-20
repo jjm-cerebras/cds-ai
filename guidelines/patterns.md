@@ -1,10 +1,8 @@
 ---
-version: 0.1.0
+version: 0.1.4
 type: reference
 title: page patterns
-resource: /Users/jj.moi/Desktop/cds-playground-3/tokens
 timestamp: 2026-07-18T00:00:00Z
-exploration: playground-3
 ---
 
 # Page patterns
