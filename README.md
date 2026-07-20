@@ -18,7 +18,7 @@ Using DTCG design tokens
 **Tokens**
 - Machine-readable token values, definitions, and concise purpose
 
-**Source**
+**Components**
 - Component library of approved UI components in isolation to serve as the visual reference
 
 ---
