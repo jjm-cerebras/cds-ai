@@ -1,11 +1,8 @@
 ---
-version: 0.1.0
+version: 0.1.4
 type: reference
 title: design principles
-resource: /Users/jj.moi/Desktop/cds-playground-3/tokens
-source: consolidated from the per-foundation references (extracted from the shipped Cerebras Cloud platform)
 timestamp: 2026-07-17T00:00:00Z
-exploration: playground-3
 ---
 
 # Design Principles
