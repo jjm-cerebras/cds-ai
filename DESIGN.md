@@ -2,58 +2,16 @@
 
 A portable, token-first manifest for producing anything that should look like it belongs in the Cerebras Cloud platform — product UI, dashboards, tables, forms, onboarding, or docs surfaces.
 
-Everything needed to build UI is split across this manifest: **tokens** (every color, type recipe,
-spacing step, radius, shadow, and motion token, in [`tokens/`](tokens/)), **foundations** (how those
-tokens combine) and **components** (behavioural rules per component) — both in
-[`guidelines/`](guidelines/). Rules use RFC 2119: MUST, MUST NOT, SHOULD, MAY.
+Everything needed to build UI is split across this manifest: **tokens** (every color, type recipe, spacing step, radius, shadow, and motion token, in [`tokens/`](tokens/)), **foundations** (how those tokens combine) and **components** (behavioural rules per component) — both in [`guidelines/`](guidelines/). Rules use RFC 2119: MUST, MUST NOT, SHOULD, MAY.
 
-Colors are authored in **OKLCH** and compiled to hex; where a token has no OKLCH twin the hex is
-canonical. Refer to tokens by their key in prose (`accent`, `surface`, `text-primary`); emit the
-resolved value in HTML/CSS. This file is extracted from the shipped Cerebras Cloud platform
-(`@cerebras/common` Tailwind preset + app `globals.css` + the shared component library), not a
-hand-authored spec — it documents what the product actually renders.
+Colors are authored in **OKLCH** and compiled to hex; where a token has no OKLCH twin the hex is canonical. Refer to tokens by their key in prose (`accent`, `surface`, `text-primary`); emit the
+resolved value in HTML/CSS. This file is extracted from the shipped Cerebras Cloud platform (`@cerebras/common` Tailwind preset + app `globals.css` + the shared component library), not a hand-authored spec — it documents what the product actually renders.
 
 ### Structure
 
-**Tokens** — authored in **[W3C Design Tokens (DTCG)](https://tr.designtokens.org/format/) format**
-(`$value` / `$type`, `{group.token}` references) so they import into Figma variables / Tokens Studio:
-[`tokens/primitive.json`](tokens/primitive.json) (raw ramps + scales) ·
-[`tokens/semantic.json`](tokens/semantic.json) (semantic color + type aliases) ·
-[`tokens/alias.json`](tokens/alias.json) (component-level bindings). These three JSON files are the
-**source of truth**. [`src/tokens.css`](src/tokens.css) mirrors `primitive.json` +
-`semantic.json` as CSS custom properties — components consume them as `var(--colors-*)`,
-`var(--spacing-*)`, etc., or via the [`src/tokens.ts`](src/tokens.ts) `token()` / `typography()`
-bridge. **This exploration ships no token build script, so keep `src/tokens.css` in sync with the
-JSON by hand** (edit both together). The `colors` group is plural to match
-the reference convention (`{colors.brand-50}`) used across the component token JSON.
+**Tokens** — authored in **[W3C Design Tokens (DTCG)](https://tr.designtokens.org/format/) format** (`$value` / `$type`, `{group.token}` references) so they are tool agnostic and can be imported into external tools as variables.
 
-**Foundations** — all in [`guidelines/foundation.md`](guidelines/foundation.md):
-[Colors](guidelines/foundation.md#colors) · [Typography](guidelines/foundation.md#typography) ·
-[Layout](guidelines/foundation.md#layout) ·
-[Elevation & Depth](guidelines/foundation.md#elevation--depth) ·
-[Shapes](guidelines/foundation.md#shapes) · [Motion](guidelines/foundation.md#motion) ·
-[Icons](guidelines/foundation.md#icons)
-
-**Components** — all in [`guidelines/components.md`](guidelines/components.md):
-[Breadcrumbs](guidelines/components.md#breadcrumbs) · [Heading](guidelines/components.md#heading) ·
-[Button](guidelines/components.md#button) ·
-[SquareButton / IconButton](guidelines/components.md#squarebutton--iconbutton) ·
-[TextButton / PlainButton](guidelines/components.md#textbutton--plainbutton) ·
-[Textbox](guidelines/components.md#textbox-input) ·
-[Selection controls](guidelines/components.md#selection-controls) ·
-[Chips](guidelines/components.md#status--metadata-chips) ·
-[Overlays & feedback](guidelines/components.md#overlays--feedback) ·
-[Tabs](guidelines/components.md#tabs) · [Table](guidelines/components.md#table) ·
-[Banner](guidelines/components.md#banner) · [CodeBlock](guidelines/components.md#codeblock)
-
-**Patterns** — page / composition templates in [`guidelines/patterns.md`](guidelines/patterns.md):
-[List / table view](guidelines/patterns.md#list--table-view).
-
-**Principles** — the emphasis and hierarchy rules in [`guidelines/principles.md`](guidelines/principles.md).
-
-**Global guidance (this file):** [Overview](#overview) · [Do's and Don'ts](#dos-and-donts) ·
-[Voice and tone](#voice-and-tone) · [Accessibility](#accessibility) ·
-[Responsive behaviour](#responsive-behaviour)
+**This exploration doesn't ship token build script, so keep `tokens.css` in sync with the JSON by hand** (edit both together).
 
 ---
 
@@ -67,13 +25,11 @@ The visual language is Modern Technical—clean, structured, and intentionally m
 
 #### Atmosphere rules
 
-- **MUST** default to the warm neutral canvas (`surface`, `cds-neutral-*`) for the ~90% of the screen that is not communicating meaning.
-- **MUST** reserve saturated color for one of: the brand accent (one primary action per view), semantic status (negative, positive, warning, info), or data visualization (`tier-*`).
-- **MUST** compose layout on the 4px grid via the `spacing` scale.
-- **MUST** signal elevation with white cards on the warm canvas plus a soft `shadow`, never a heavy drop shadow.
-- **MUST NOT** imitate Material's depth theatre, generic Tailwind greyscale gradients, or marketing-site branding; this system is for practical product UI.
-- **SHOULD** prefer hairlines (`divider`) and whitespace for grouping before reaching for shadow.
-- **SHOULD** let the canvas stay quiet so the orange accent and status color carry real signal.
+- Default to the warm neutral canvas for the area that is not communicating meaning
+- Reserve saturated color for one of: the brand accent (one primary action per view), semantic status (negative, positive, warning, info), or data visualization
+- Compose layout on the 4px grid via the `spacing` scale
+- Prefer hairlines (`divider`) and whitespace for grouping before reaching for shadow
+- Let the canvas stay quiet so the orange accent and status color carry real signal
 
 #### Restraint — one accent, held back
 
@@ -81,14 +37,13 @@ Orange (`accent`) is the only brand color. It appears on the single primary acti
 
 #### Reference points
 
-- **Aligned with:** Radix Colors (scale discipline), Linear (restraint, calm surfaces), warm paper-like neutrals over clinical gray.
-- **Not aligned with:** Material Design (heavier elevation, broad saturation), Tailwind defaults (cool greyscale, generic radius), glassmorphism / neon-gradient dashboards.
+- **Aligned with:** Radix Colors (ramp scale discipline)
 
 ---
 
 ## Do's and Don'ts
 
-The scan-friendly TL;DR. Each line is a drift pattern to correct on sight. Tokens are referenced by key; values resolve from the [`tokens/`](tokens/) JSON.
+Each line is a drift pattern to correct on sight. Tokens are referenced by key; values resolve from the tokens JSON.
 
 | Do                                                                        | Don't                                                                              |
 | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
