@@ -1,9 +1,8 @@
 ---
-version: 0.1.0
+version: 0.1.4
 type: reference
 title: generation workflow
 timestamp: 2026-07-17T00:00:00Z
-exploration: playground-3
 ---
 
 # Generation workflow
