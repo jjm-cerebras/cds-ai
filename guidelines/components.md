@@ -12,7 +12,9 @@ The visual recipe (tokens, sizing, radius, typography) for each component is in 
 
 **Naming note:** the core buttons take **boolean props** (`secondary`, `negative`, `small`), not a `primary | secondary | …` string union. "Primary" is simply the default (no `secondary`), and its fill is `interactive-55` (the orange accent).
 
-**States.** Every interactive component and view consciously accounts for **rest · hover · focus · active/selected · disabled · loading · empty · error** — never ship only the happy path. Reuse existing tokens (focus = 2px `brand-50`; loading = `spinner`; disabled = `button-disabled`; empty/error follow the [Table](#table) empty state and [Overlays & feedback](#overlays--feedback) notifications). Not every component needs all eight, but each is a deliberate yes/no.
+**States.** Every interactive component and view consciously accounts for **rest · hover · focus · active/selected · disabled · loading · empty · error** — never ship only the happy path. Reuse existing tokens (focus = 2px `focus` (brand-52); loading = `spinner`; disabled = `button-disabled`; empty/error follow the [Table](#table) empty state and [Overlays & feedback](#overlays--feedback) notifications). Not every component needs all eight, but each is a deliberate yes/no.
+
+**Static gallery vs interactive behavior.** `examples/components.html` is a *static* server render — it shows rest state plus every CSS-expressible state (`:hover`, `:focus-visible`, `:checked`, and prop-driven states like disabled/error/selected). Behaviors that need the app runtime — tooltip open-delay, notification auto-dismiss, tab/menu arrow-key navigation, click-to-sort a table — live in the React components and are exercised in the app, not the static gallery. Where a rule below is such a behavior, it is marked *interactive-build*.
 
 ### Index
 
@@ -34,7 +36,7 @@ The visual recipe (tokens, sizing, radius, typography) for each component is in 
 
 ## Breadcrumbs
 
-Tokens: [`components/breadcrumbs.json`](./breadcrumbs.json) → `breadcrumbs`, `breadcrumbs-item`, `breadcrumbs-current`, `breadcrumbs-separator`.
+Tokens: [`tokens/breadcrumbs.json`](../tokens/breadcrumbs.json) → `breadcrumbs`, `breadcrumbs-item`, `breadcrumbs-current`, `breadcrumbs-separator`.
 
 A horizontal navigation trail that sits **above the page title** to show where the current view lives — on the settings page it reads `Organizations / Settings`. Parent items are links; the last item is the current, non-link location.
 
@@ -53,7 +55,7 @@ Type is **Sometype Mono, 600, 0.8125rem (13px)**, UPPERCASE, with `0.02em` track
 
 ## Heading
 
-Tokens: [`components/heading.json`](./heading.json) → `heading`, `heading-page-title`, `heading-page-description`, `heading-section-title`, `heading-section-description`.
+Tokens: [`tokens/heading.json`](../tokens/heading.json) → `heading`, `heading-page-title`, `heading-page-description`, `heading-section-title`, `heading-section-description`.
 
 Titles the top of a view (`variant="page"`) or a block within it (`variant="section"`), each with an optional description line beneath. On the settings view the page heading reads **Settings** with the description *"Manage your organization's profile, members, and preferences."*, and each block below carries a section heading like **General** with *"General information about your organization."*
 
@@ -64,7 +66,7 @@ Exact type, extracted from the live page (all Manrope):
 | Page title          | 1.25rem / 20px · 500 | 1 (20px)    | `-0.02em` | `neutral-95` (`#161519`)       |
 | Page description    | 0.875rem / 14px · 500| 1.5 (21px)  | `-0.01em` | `neutral-95` (`#161519`)       |
 | Section title       | 1rem / 16px · 500    | 1.3 (20.8px)| `-0.02em` | `neutral-95` (`#161519`)       |
-| Section description | 0.75rem / 12px · 400 | 1.333 (16px)| normal    | `neutral-60` (`#424049`)       |
+| Section description | 0.8125rem / 13px · 400 | 1.333 (17.3px)| normal    | `neutral-60` (`#424049`)       |
 
 Spacing: the page title sits `1rem` (16px) above its description, which reserves `1.25rem` (20px) below itself. A section title sits `spacing.1` (4px) above its description and the section block opens with `spacing.12` (48px) above it.
 
@@ -100,8 +102,8 @@ Tokens: [`tokens/alias.json`](../tokens/alias.json) → `square-button`, `icon-b
 
 Square (`w-9 h-9`, `rounded-sm`) single-purpose controls for toolbars and row actions.
 
-- **SquareButton** carries the full button variant model (secondary/primary/negative + `selected`) and the brand-orange focus outline.
-- **IconButton** is the lowest-emphasis form: `neutral-60` icon, `neutral-10` hover wash, no border. It has **no focus ring in the current code** — **SHOULD** add the brand-orange outline when building new instances.
+- **SquareButton** is the neutral/secondary square control with a `selected` state and the brand-orange focus outline. (A full primary/negative variant model is a documented extension; the shipped square button is neutral-only.)
+- **IconButton** is the lowest-emphasis form: `neutral-60` icon, `neutral-10` hover wash, no border. It carries the brand-orange `focus-visible` outline (`.cds-focus`).
 - **MUST** give every icon-only control an accessible name; **MUST NOT** use one where the glyph's meaning isn't obvious.
 
 ---
@@ -110,7 +112,7 @@ Square (`w-9 h-9`, `rounded-sm`) single-purpose controls for toolbars and row ac
 
 Tokens: [`tokens/alias.json`](../tokens/alias.json) → `text-button`.
 
-Link-styled and fully-unstyled action text. `TextButton` is `interactive-55` (orange) hovering to `interactive-50`. Use for inline, low-emphasis actions; **SHOULD** prefer it over inventing a "ghost" button appearance.
+Low-emphasis inline action using the **shared CDS link treatment** — identical to a [table row-action link](#table): **Sometype Mono, UPPERCASE, weight 600** (`typography.button`), `interactive-55` (orange), with a **1.5px transparent bottom border that appears in `interactive-55` on hover** (the color does not change). This is the `.cds-link` utility, used by both TextButton and table row actions so link buttons read the same everywhere. Use for inline, low-emphasis actions; **SHOULD** prefer it over inventing a "ghost" button appearance.
 
 ---
 
@@ -121,10 +123,10 @@ Tokens: [`tokens/alias.json`](../tokens/alias.json) → `textbox`, `textbox-focu
 Single-line and multiline input. White fill, `cds-neutral-200` 1px border at `rounded-sm`, `input` typography.
 
 - **MUST** provide a visible `Label` (`small-text`, `neutral-95`) — placeholder is not a label; placeholder color is `neutral-45`.
-- **Focus** raises a `brand-50` border + 25%-opacity `brand-50` ring. **Hover** deepens the border to `cds-neutral-500`.
-- **Error** state is `negative-5` fill + `negative-50` border, paired with an `Error` message; the message text, required asterisk, and invalid border use **`cds-danger`**, not `negative`.
+- **Focus** raises a solid 2px `focus` ring (`brand-52`) plus a `focus` border (see [Accessibility → Focus](./accessibility.md#focus)). **Hover** deepens the border to `cds-neutral-500`.
+- **Error** state is `negative-5` fill + **`cds-danger-8`** border, paired with an `Error` message; the message text, required asterisk, and invalid border all use **`cds-danger`**, not `negative`.
 - **ReadOnly** is `neutral-15` fill, `neutral-20` border, `neutral-60` text, non-interactive.
-- Helper text is `helper-text` in `neutral-70`, `mt-2`.
+- Helper text is `helper-text` in `foreground-muted`, `mt-2` (8px). (`neutral-70` isn't a defined token; `foreground-muted` is the muted-text semantic.)
 
 ---
 
@@ -132,11 +134,11 @@ Single-line and multiline input. White fill, `cds-neutral-200` 1px border at `ro
 
 Tokens: [`tokens/alias.json`](../tokens/alias.json) → `checkbox`, `radio`, `switch`, `segmented-control`.
 
-- **Checkbox** — 16px. The `cds` variant is a native input tinted `accent-brand-50`; the Radix variant fills checked state with `interactive-55`. Show the check glyph only when checked.
+- **Checkbox** — 16px. Checked state fills with `interactive-55` (brand accent) and shows a **white** check glyph; unchecked is a `cds-neutral-200` border on white. Show the check glyph only when checked.
 - **RadioButton** — 16px circle, `interactive-55` border + dot when selected; this is the one control that uses the `shadow-focus` glow.
 - **Switch** — 42×24 track, `neutral-15` off → **`accent`** (orange) checked; white thumb travels 19px as a `transition` (never a jump). Disabled-checked drops to `neutral-40`.
-- **SegmentedControl** — sliding white highlight over a group; selected item is underlined (`offset-4 decoration-2`) in `neutral-80`, unselected `neutral-45`.
-- **MUST** preserve these state tokens rather than substituting custom fills, and **MUST NOT** rely on color alone — the check glyph, dot, and underline carry state without color.
+- **SegmentedControl** — the selected item sits on a raised white highlight (`highlightBackground` + soft `selectedShadow`) in `neutral-80` text; unselected items are `neutral-45` on the `neutral-15` track. No underline — the raised highlight is the selection cue.
+- **MUST** preserve these state tokens rather than substituting custom fills, and **MUST NOT** rely on color alone — the check glyph, radio dot, and the raised segmented highlight carry state without color.
 
 ---
 
@@ -145,7 +147,7 @@ Tokens: [`tokens/alias.json`](../tokens/alias.json) → `checkbox`, `radio`, `sw
 Tokens: [`tokens/alias.json`](../tokens/alias.json) → `badge`, `count`, `stamp`.
 
 - **Badge** — low-emphasis classification. `ground` = filled tint (`positive-10`, `info-15`, `warning-15`, `negative-15`, `neutral-10`); `floor` = outlined. Text stays `neutral-60`; only the optional icon takes the role color (`iconIntent`).
-- **Count** — pill number (`rounded-full`), role-colored solid (`brand-55`, `neutral-85`, …) with `neutral-5` text.
+- **Count** — pill number (`rounded-full`), role-colored solid (brand `accent`, `neutral-90`, …) with `neutral-5` text.
 - **Stamp** — bold monospace-style tag with tier support: `tier-1…5` text, or `tier/20` subtle fills. Use for ranked/tiered labels.
 - **Status pill** — the concrete status pattern for tables and inline state: a Badge `ground` tint + `neutral-60` text **label**, **no icon** (never tint the text). The text label carries the meaning, which satisfies the non-color-alone requirement. Height `1.5rem`, `spacing.2` inline padding, `rounded-sm`. Map role by meaning: **healthy / success** → `positive-10`; **degraded / warning** → `warning-15`; **provisioning / in-progress** → `info-15`; **error / failed** → `negative-15`; **neutral / unknown** → `neutral-10`.
 - **MUST** pick Badge/Count/Stamp by emphasis, and **MUST NOT** use a status tint where there is no status to communicate.
@@ -156,9 +158,9 @@ Tokens: [`tokens/alias.json`](../tokens/alias.json) → `badge`, `count`, `stamp
 
 Tokens: [`tokens/alias.json`](../tokens/alias.json) → `tooltip`, `notification`, `spinner`, `dropdown-trigger`, `dropdown-menu`, `dropdown-item`.
 
-- **Tooltip** — dark inverted label: `neutral-85` fill, white text, `rounded-sm`, `max-w-240px`, 200ms open delay. Keep it short and non-interactive.
-- **Notification** — inline banner: `success` = `positive-15` / `positive-80`, `error` = `negative-15` / `negative-80`, `warning` = `warning-15`, `info` = `neutral-5`. Each **MUST** keep its leading icon; default auto-dismiss is 12s.
-- **Spinner** — `ring` (orange head `brand-50` on `neutral-20` track, 0.7s), `dots`, and `bar` variants. Carries `role="status"` + an `sr-only` "Loading…"; **MUST** preserve both.
+- **Tooltip** — dark inverted label: `neutral-90` fill, white text, `rounded-sm`, `max-w-240px`. Keep it short and non-interactive. (The 200ms open delay is interactive-build behavior — see the note above; the static component is a presentational bubble.)
+- **Notification** — inline banner: surfaces are `success` = `positive-15`, `error` = `negative-15`, `warning` = `warning-15`, `info` = `neutral-5`; the **leading icon** takes the role solid (`positive-50` / `negative-50` / `warning-50` / `info-50`) and the **body text is `foreground`** (near-black — kept high-contrast rather than role-tinted). Each **MUST** keep its leading icon and a labelled dismiss. (Default 12s auto-dismiss is interactive-build behavior.)
+- **Spinner** — `ring` (orange head `brand-50` on `neutral-20` track, 0.7s) is the implemented default; `dots` and `bar` are documented variants for the interactive build. Carries `role="status"` + an `sr-only` "Loading…"; **MUST** preserve both.
 - **Dropdown / Popover** — white (`cds-neutral-0`) menu, `cds-neutral-100` border, `rounded-sm`, soft `0 2px 8px` shadow, opening with `slideDownAndFade`/`fadeSlide` (fade + short rise). Selected item shows a `brand-50` check.
 
 ---
@@ -167,7 +169,7 @@ Tokens: [`tokens/alias.json`](../tokens/alias.json) → `tooltip`, `notification
 
 Tokens: [`tokens/alias.json`](../tokens/alias.json) → `tab`, `tab-secondary`.
 
-- **Tabs** — primary tabs are pill-shaped (`neutral-15` selected fill); secondary tabs are underline-style (`border-b-2 neutral-95` selected). Keep the selected state on both text weight (`md-b`) and the fill/underline together.
+- **Tabs** — primary tabs are `rounded-sm` with a `neutral-15` selected fill + `neutral-20` border; secondary tabs are underline-style with a **2px brand `accent` (orange) underline** on the selected tab (`foreground` text, `tab-secondary.selectedUnderline`). This is a sanctioned accent use — the active/selected state. Keep the selected state on both text weight (**`bold-text`, 600**) and the fill/underline together. (Arrow-key navigation between tabs is interactive-build behavior.)
 
 ---
 
@@ -179,7 +181,7 @@ A sortable data table on a white card. The surface is `colors.neutral` (white) w
 
 Type: cells are `body` size (14px) on an `18px` line; the **first column is bold** (weight 700, `table.emphasisFontWeight`) as the row's name/identity, every other column is regular (400). Columns flagged `mono` render in `family-mono` (ids, hashes, aligned numbers). Row text is `foreground` — note the shipped component uses `neutral-95`, which has **no token in this system**; `foreground` is the closest and is the correct semantic for primary text.
 
-Headers are **uppercase `table-header`** (12px / 600 / +0.02em) in a `flex` row with a `spacing.2` gap between label and sort icon. The **sort icon** shows on the **active column only** — lucide `arrow-down` (ascending / A→Z) or `arrow-up` (descending) in `interactive-55` (`table-sort-icon.colorActive`). Inactive columns show **no icon at rest**; on hover they preview the arrow in the *current active sort direction* in `interactive-60` (`colorHover`). The **empty state** is `emptyText` centered in a `10rem` (`table-empty.height`) band, colored `neutral-45`.
+Headers are **uppercase `table-header`** (12px / 600 / +0.02em) in a `flex` row with a `spacing.2` gap between label and sort icon. The **sort icon** shows on the **active column only** — lucide `arrow-down` (ascending / A→Z) or `arrow-up` (descending) in `interactive-55` (`table-sort-icon.colorActive`). Inactive columns show **no icon at rest**; on hover they preview the arrow in the *current active sort direction* in `interactive-60` (`colorHover`). The **empty state** is `emptyText` centered in a `10rem` (`table-empty.height`) band, colored `neutral-45` at **`body` font size** (14px, `table-empty.fontSize` → `{typography.body.fontSize}`).
 
 - **MUST** render column headers in **UPPERCASE `table-header`** — this is a deliberate CDS signature shared only with button labels and the breadcrumb trail. Never sentence-case a header.
 - **MUST** emphasize the **first column** (weight 700) as the row's identity; keep all other columns at regular weight. Hierarchy across a row comes from that one bold column, not from coloring.
@@ -187,7 +189,7 @@ Headers are **uppercase `table-header`** (12px / 600 / +0.02em) in a `flex` row 
 - **MUST** show the sort icon on the **active column only** (`interactive-55`), hide it on inactive columns at rest, and on hover preview the *active sort direction* in `interactive-60`; hovering the active column also lifts it to `interactive-60`. (`neutral-60` remains the resting `color` token for any legacy always-on variant.)
 - **MUST** show a centered `neutral-45` empty state (never a blank card) when there are no rows.
 - **MUST** align every header left except optionally the **last** column, which may be left / center / right via `lastHeaderAlign` (default center) to sit over an actions or numeric column.
-- **MUST** style row **action links** (the Options column) as CDS links (`table-link`): `interactive-55` (the accent), **`font-mono` + uppercase `button` type**, on a `1.5px` (`borders.width-medium`) transparent bottom border that appears in `interactive-55` on hover — the underline matches the text color, which does **not** change. Never use `brand-55` or an un-underlined link for row actions. Multiple actions sit in a `spacing.4` row (`table-link.gap`).
+- **MUST** style row **action links** (the Options column) as CDS links (`table-link`): `interactive-55` (the accent), **`font-mono` + uppercase `button` type**, on a `1.5px` (`borders.width-medium`) transparent bottom border that appears in `interactive-55` on hover — the underline matches the text color, which does **not** change. Never use `brand-55` or an un-underlined link for row actions. Multiple actions sit in a `spacing.4` row (`table-link.gap`). In the React `Table`, an Options column is supplied via a column's `renderData` returning `TextButton`s / `.cds-link` anchors (which carry exactly this treatment) — the table doesn't hardcode an actions column.
 - **SHOULD** pair the table with a page [Heading](#heading) and a search field above it; the table itself carries no title.
 - **MUST NOT** darken the row separators past `neutral-15` or drop the header rule to 1px — the 2px header rule vs 1px row rules is what sets the header apart without a fill.
 - **MUST NOT** put a border rule under the final row; the card edge closes the table.

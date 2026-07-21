@@ -195,8 +195,10 @@ Corners are barely rounded — precise and technical, not playful. **One radius 
 
 - **MUST** use a **1px** hairline (`divider` / `cds-neutral-200`) for resting borders (inputs, cards, table rules).
 - **Focus is a 2px brand-orange indicator.** Two dominant shapes exist in the shipped library, and both are canonical:
-  - **Buttons & menu items** — `outline: 2px solid brand-50` at `2px` offset.
-  - **Inputs, dropdowns, selects** — a `brand-50` box-shadow ring at ~25% opacity (`ring-2 ring-brand-50/25`) plus a `brand-50` border.
+  - **Buttons & menu items** — `outline: 2px solid focus` at `2px` offset.
+  - **Inputs, dropdowns, selects** — a solid 2px `focus` box-shadow ring plus a `focus` border. (The ring is solid rather than a translucent glow so it stays crisp and isn't muddied against the field border.)
+
+  The **`focus` token** resolves to `brand-52` (`#E04A18`). It was darkened from the shipped `brand-50` (`#FF985C`) so the 2px indicator clears the **3:1** non-text-contrast minimum (WCAG 2.2 §1.4.11) against both the warm canvas and white cards — `brand-50` measured only 1.95:1 / 2.12:1. Retune focus centrally via this one token.
 - **MUST** show one of those focus indicators on every focusable control; **never** ship `outline: none` without replacing it. (Note: a few controls historically use an interactive-blue ring — `ring-interactive-55` — and RadioButton uses the `shadow-focus` glow token `0 0 0 4px #89D8F0`. Prefer the brand-orange indicator for new work; treat the others as legacy.)
 - **MUST NOT** use thick colored borders as the sole callout emphasis — use a status surface + icon.
 

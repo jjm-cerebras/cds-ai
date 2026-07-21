@@ -7,7 +7,7 @@ timestamp: 2026-07-17T00:00:00Z
 
 # Generation workflow
 
-How an AI (or a person) produces Cerebras UI from two sources of truth. The model is **layered**: approved components are the truth at *generation* time; [`DESIGN.md`](DESIGN.md) is the truth at *spec, composition, and bootstrap* time. They operate at different moments, not in competition.
+How an AI (or a person) produces Cerebras UI from two sources of truth. The model is **layered**: approved components are the truth at *generation* time; [`DESIGN.md`](../DESIGN.md) is the truth at *spec, composition, and bootstrap* time. They operate at different moments, not in competition.
 
 ---
 
@@ -73,8 +73,8 @@ Creating a net-new reusable component. This is where the manifest is load-bearin
 1. **Confirm it doesn't already exist.** Search the approved folder first. If a variant of an existing component covers it, extend that instead of authoring new.
 2. **Author against the spec, not by eye.** Pull from the manifest:
    - tokens for every color / spacing / radius / shadow (no hardcoded values),
-   - the relevant [`foundations/`](foundations/) rules,
-   - the closest existing [`components/`](components/) spec for API and naming conventions.
+   - the relevant [`foundation.md`](foundation.md) rules,
+   - the closest existing [`components.md`](components.md) spec for API and naming conventions.
 3. **Build all required states and responsiveness in** — default, hover, focus, active, disabled, loading, empty, error — so the finished component becomes generation-time truth (Layer 1) and never needs the manifest at *use* time.
 4. **Bake the invariants the component *can* own** — required `aria-label` on icon-only controls, `focus-visible` indicator, contrast-verified pairings. Enforce them in the API (required props) so they can't be omitted downstream. naming, state coverage. (`token-guardian` / `a11y` / `system-designer` cover this.)
 6. **Admit it to the approved folder.** Membership records that the check passed. From here the component is correct-by-admission and drops into Layer 1.

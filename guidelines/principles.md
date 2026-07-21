@@ -7,28 +7,33 @@ timestamp: 2026-07-17T00:00:00Z
 
 # Design Principles
 
-## Visual emphasis reflects action importance
 
-Use visual emphasis intentionally.
-Every increase in emphasis draws user attention and should be justified by the action's importance.
+## Speed is intelligence
 
----
-
-## Use the minimum necessary emphasis
-
-Choose the lowest level of visual emphasis that still communicates the action's importance.
-Avoid using stronger emphasis than necessary.
+This is Cerebras' core brand promise and design north star. The design system should embody this in the experience, not just visual design.
 
 ---
 
-## Hierarchy and intent are independent
+## Emphasis reflects importance
 
-Visual hierarchy communicates importance.
-Intent communicates consequence.
-A destructive action may use any hierarchy level depending on its importance.
+Use visual emphasis intentionally. Use the minimum necessary of visual emphasis that still communicates the action's importance.
 
 ---
 
-## Maintain consistency
+## Clarity over cleverness
 
-The same action hierarchy should produce the same visual hierarchy throughout the product.
+If it needs explanation, simplify it. Prefer obvious patterns over elegant abstractions. Design should be simple by default, advanced when needed.
+
+---
+
+## Predictable by design
+
+The same action hierarchy should maintain consistency and produce the same information hierarchy throughout the product. Behavior and structure should be self-evident.
+
+---
+
+## Built for builders
+
+The system exists to accelerate product teams, not to enforce design taste. Optimize for adoption and developer trust.
+
+---
