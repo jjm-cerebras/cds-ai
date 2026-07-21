@@ -1,16 +1,15 @@
 ---
 name: cds-drift-check
 description: >-
-  Check a codebase for drift between its design tokens/docs/code and the
-  Cerebras Design System (CDS). Use this whenever someone asks whether their UI
-  or tokens still match the design system, wants to verify token→CSS is in sync,
-  is about to ship or merge a design/token change, is setting up a CI gate for
-  design consistency, suspects hardcoded colors/spacing that should be tokens,
-  or asks to "check for drift", "audit design tokens", "is my generated CSS
-  stale", "do the docs match the tokens", or "make sure this still matches CDS".
-  Trigger it even when they don't say the word "drift" — any request to confirm
-  a codebase conforms to CDS token values, resolves its token references, or
-  keeps generated CSS current belongs here.
+  Check codebase for drift between its design tokens/docs/code and CDS (Cerebras
+  Design System). Use this to ask whether the interface or tokens still match
+  the design system, wants to verify token→CSS is in sync, is about to ship or
+  merge a design/token change, is setting up a CI gate for design consistency,
+  suspects hardcoded colors/spacing that should be tokens, or asks to "check for
+  drift", "audit design tokens", "do the docs match the tokens", or "make sure
+  this still matches CDS". Trigger it even when they don't say the word "drift"
+  — any request to confirm a codebase conforms to CDS token values, resolves its
+  token references, or keeps generated CSS current belongs here.
 ---
 
 # CDS drift check
