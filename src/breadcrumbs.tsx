@@ -1,5 +1,5 @@
 import { CSSProperties, Fragment, ReactNode } from 'react'
-import tokens from '../components/breadcrumbs.json'
+import tokens from '../tokens/breadcrumbs.json'
 import { token } from './tokens'
 
 export type Crumb = {
@@ -13,7 +13,7 @@ export type Crumb = {
  * shares one muted color; links warm to the brand accent on hover only.
  *
  * No styling values live here: every color, gap, and type value is read from
- * `components/breadcrumbs.json` and resolved to a CSS custom property.
+ * `tokens/breadcrumbs.json` and resolved to a CSS custom property.
  */
 export const Breadcrumbs = ({
   items = [
@@ -69,21 +69,11 @@ export const Breadcrumbs = ({
             ) : (
               <a
                 href={crumb.href}
+                className="cds-crumb-link"
                 style={{
-                  color: token(t['breadcrumbs-item'].textColor),
-                  textDecoration: 'none',
-                  transitionProperty: 'color',
-                  transitionDuration: token(t.breadcrumbs.transition)
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = token(
-                    t['breadcrumbs-item'].textColorHover
-                  )
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = token(
-                    t['breadcrumbs-item'].textColor
-                  )
+                  // Per CDS: hover adds a 2px-offset underline; the color never changes.
+                  // Underline is CSS (.cds-crumb-link) so it works in static render too.
+                  color: token(t['breadcrumbs-item'].textColor)
                 }}
               >
                 {crumb.label}

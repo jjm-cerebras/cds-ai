@@ -1,0 +1,144 @@
+/*
+ * components.css — companion stylesheet for the CDS React components.
+ *
+ * Base styling lives inline in each component (read from the token JSON via the
+ * token() bridge). This file carries ONLY the pseudo-class states that inline
+ * styles cannot express (:hover, :focus-visible, :active, :disabled) and the
+ * keyframes. Every value is a token var() reference — no literals.
+ */
+
+/* --- Focus indicators (the two canonical CDS styles) --------------------- */
+.cds-focus:focus-visible {
+  outline: 2px solid var(--colors-focus);
+  outline-offset: 2px;
+}
+.cds-focus-ring:focus-visible {
+  /* stylelint-disable-next-line declaration-property-value-disallowed-list -- replaced by the solid focus ring below (the CDS input focus pattern) */
+  outline: none;
+  border-color: var(--colors-focus);
+  /* Solid ring (renders outside the field's inline-styled border, so it's not overridden). */
+  box-shadow: 0 0 0 2px var(--colors-focus);
+}
+
+/* --- Button hover fills (base fill set inline) --------------------------- */
+.cds-btn-primary:not(:disabled):hover { background-color: var(--colors-interactive-60); }
+.cds-btn-secondary:not(:disabled):hover { background-color: var(--colors-cds-neutral-100); }
+.cds-btn-negative:not(:disabled):hover { background-color: var(--colors-negative-50); }
+.cds-btn-secondary-negative:not(:disabled):hover { background-color: var(--colors-negative-10); }
+
+/* --- Icon button / square button (resting + hover) ----------------------- */
+/* Resting background/color set here (not inline) so the :hover rules win. */
+.cds-icon-btn { background: none; color: var(--colors-neutral-60); }
+.cds-icon-btn:hover { background-color: var(--colors-neutral-10); color: var(--colors-foreground); }
+.cds-square-btn { background-color: var(--colors-white); }
+.cds-square-btn:not(:disabled):hover { background-color: var(--colors-cds-neutral-100); }
+
+/* --- Textbox: resting border color + hover deepen + placeholder ----------- */
+.cds-textbox { border-color: var(--colors-cds-neutral-200); }
+.cds-textbox:not(:disabled):not([readonly]):hover { border-color: var(--colors-cds-neutral-500); }
+.cds-textbox::placeholder { color: var(--colors-neutral-45); }
+
+/* --- Breadcrumb link — underline on hover, color unchanged (per CDS) ------ */
+/* Underline animates in over the `fast` duration via text-decoration-color. */
+.cds-crumb-link {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+  transition: text-decoration-color var(--motion-duration-fast) ease;
+}
+.cds-crumb-link:hover { text-decoration-color: currentColor; }
+
+/* --- Link button (TextButton + table row-action links) ------------------- */
+/* Shared CDS link treatment: mono/uppercase label in interactive-55, with a
+   1.5px transparent bottom border that appears in interactive-55 on hover. */
+.cds-link { text-decoration: none; border: none; border-bottom: var(--borders-width-medium) solid transparent; }
+.cds-link:hover { border-bottom-color: var(--colors-interactive-55); }
+
+/* --- Dropdown menu item hover -------------------------------------------- */
+.cds-menu-item:hover { background-color: var(--colors-cds-neutral-100); }
+
+/* --- Checkbox (custom, white check on interactive-55 fill) ---------------- */
+.cds-checkbox-input {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  opacity: 0;
+}
+.cds-checkbox-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--colors-cds-neutral-200);
+  border-radius: var(--rounded-sm);
+  background: var(--colors-cds-neutral-0);
+  color: var(--colors-white); /* check glyph color */
+  flex: none;
+}
+.cds-checkbox-box svg { visibility: hidden; }
+.cds-checkbox-input:checked + .cds-checkbox-box {
+  background: var(--colors-interactive-55);
+  border-color: var(--colors-interactive-55);
+}
+.cds-checkbox-input:checked + .cds-checkbox-box svg { visibility: visible; }
+.cds-checkbox-input:focus-visible + .cds-checkbox-box {
+  outline: 2px solid var(--colors-focus);
+  outline-offset: 2px;
+}
+
+/* --- Radio (custom: neutral-25 border → interactive-55 border+dot; the one
+   control that uses the shadow-focus glow) -------------------------------- */
+.cds-radio-input { position: absolute; width: 16px; height: 16px; margin: 0; opacity: 0; }
+.cds-radio-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--colors-neutral-25);
+  border-radius: var(--rounded-full);
+  background: var(--colors-cds-neutral-0);
+  flex: none;
+}
+.cds-radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--rounded-full);
+  background: var(--colors-interactive-55);
+  visibility: hidden;
+}
+.cds-radio-input:checked + .cds-radio-box { border-color: var(--colors-interactive-55); }
+.cds-radio-input:checked + .cds-radio-box .cds-radio-dot { visibility: visible; }
+.cds-radio-input:focus-visible + .cds-radio-box {
+  box-shadow: var(--shadows-focus);
+  border-radius: var(--rounded-full);
+}
+
+/* --- Table sort arrow (active-only at rest; inactive previews on hover) --- */
+.cds-sort-icon {
+  flex: none;
+  transition: opacity var(--motion-duration-fast) ease, color var(--motion-duration-fast) ease;
+}
+.cds-sort-icon--active { color: var(--colors-interactive-55); }
+.cds-sort-icon--inactive { color: var(--colors-interactive-60); opacity: 0; }
+.cds-th-sortable:hover .cds-sort-icon--inactive { opacity: 1; }
+.cds-th-sortable:hover .cds-sort-icon--active { color: var(--colors-interactive-60); }
+
+/* --- Spinner ------------------------------------------------------------- */
+@keyframes cds-spin { to { transform: rotate(360deg); } }
+.cds-spinner { animation: cds-spin var(--motion-duration-spinner, 0.7s) linear infinite; }
+
+/* --- Overlay entrance ---------------------------------------------------- */
+@keyframes cds-fade-slide {
+  from { opacity: 0; transform: translateY(var(--cds-rise, 4px)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cds-overlay { animation: cds-fade-slide var(--motion-duration-fast, 150ms) ease; }
+
+/* --- Reduced motion: collapse rises, stop non-essential loops ------------ */
+@media (prefers-reduced-motion: reduce) {
+  .cds-overlay { --cds-rise: 0px; }
+  * { scroll-behavior: auto; }
+}

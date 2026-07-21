@@ -1,4 +1,5 @@
 import { CSSProperties, ReactNode, useMemo, useState } from 'react'
+import { ArrowDown, ArrowUp } from 'lucide-react'
 import tokens from '../tokens/table.json'
 import { token } from './tokens'
 
@@ -9,6 +10,14 @@ export type Column<T> = {
   field: keyof T & string
   /** Render values in the mono family (ids, hashes, numbers to align). */
   mono?: boolean
+  /**
+   * Numeric magnitude column: right-aligns the cell and its header and applies
+   * `tabular-nums` (per the CDS data-type formatting rule). Use for counts,
+   * quantities, amounts, currency.
+   */
+  numeric?: boolean
+  /** Explicit alignment override (defaults to right for `numeric`, else left). */
+  align?: Align
   /** Opt this column out of sorting. */
   noSort?: boolean
   /** Custom cell renderer; receives the raw value and the whole row. */
@@ -65,9 +74,10 @@ export function Table<T>({
   const cellBase: CSSProperties = {
     paddingBlock: token(t.table.cellPaddingBlock),
     paddingInline: token(t.table.cellPaddingInline),
-    verticalAlign: 'middle',
-    textAlign: 'left'
+    verticalAlign: 'middle'
   }
+  // Data-type formatting: numeric magnitudes right-align + tabular-nums.
+  const colAlign = (c: Column<T>): Align => c.align ?? (c.numeric ? 'right' : 'left')
   const edge = (i: number): CSSProperties => ({
     paddingLeft: i === 0 ? token(t.table.cellEdgeInline) : undefined,
     paddingRight:
@@ -97,10 +107,16 @@ export function Table<T>({
           {columns.map((c, i) => {
             const sortable = !c.noSort
             const isLast = i === columns.length - 1
+            const isActive = sortable && sort.field === c.field
+            // Both active and (hover-preview) inactive arrows point in the
+            // current active sort direction — down for asc, up for desc.
+            const SortArrow = sort.asc ? ArrowDown : ArrowUp
             return (
               <th
                 key={i}
                 scope="col"
+                className={sortable ? 'cds-th-sortable' : undefined}
+                aria-sort={isActive ? (sort.asc ? 'ascending' : 'descending') : undefined}
                 onClick={sortable ? () => onSort(c.field) : undefined}
                 style={{
                   ...cellBase,
@@ -123,19 +139,16 @@ export function Table<T>({
                     display: 'flex',
                     alignItems: 'center',
                     gap: token(t.table.headerGap),
-                    justifyContent: isLast ? justify[lastHeaderAlign] : undefined
+                    justifyContent:
+                      justify[c.align ?? (c.numeric ? 'right' : isLast ? lastHeaderAlign : 'left')]
                   }}
                 >
                   {c.label}
                   {sortable && (
-                    <SortIcon
-                      state={
-                        sort.field === c.field
-                          ? sort.asc
-                            ? 'asc'
-                            : 'desc'
-                          : 'none'
-                      }
+                    <SortArrow
+                      size={16}
+                      aria-hidden="true"
+                      className={`cds-sort-icon ${isActive ? 'cds-sort-icon--active' : 'cds-sort-icon--inactive'}`}
                     />
                   )}
                 </div>
@@ -154,6 +167,7 @@ export function Table<T>({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  fontSize: token(t['table-empty'].fontSize),
                   color: token(t['table-empty'].textColor)
                 }}
               >
@@ -184,6 +198,8 @@ export function Table<T>({
                       style={{
                         ...cellBase,
                         ...edge(i),
+                        textAlign: colAlign(c),
+                        fontVariantNumeric: c.numeric ? 'tabular-nums' : undefined,
                         fontFamily: c.mono
                           ? token(t.table.monoFontFamily)
                           : token(t.table.cellFontFamily),
@@ -209,32 +225,3 @@ export function Table<T>({
   )
 }
 
-/** Sort affordance: a double chevron; the active direction uses the brand color. */
-const SortIcon = ({ state }: { state: 'none' | 'asc' | 'desc' }) => {
-  const active = state !== 'none'
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      aria-hidden="true"
-      style={{
-        color: active
-          ? token(tokens['table-sort-icon'].colorActive)
-          : token(tokens['table-sort-icon'].color),
-        flex: 'none'
-      }}
-    >
-      <path
-        d="M6 1.5 8.5 4.5H3.5z"
-        fill="currentColor"
-        opacity={state === 'desc' ? 0.35 : 1}
-      />
-      <path
-        d="M6 10.5 3.5 7.5H8.5z"
-        fill="currentColor"
-        opacity={state === 'asc' ? 0.35 : 1}
-      />
-    </svg>
-  )
-}

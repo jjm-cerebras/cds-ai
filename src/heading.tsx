@@ -1,5 +1,5 @@
 import { CSSProperties, ReactNode } from 'react'
-import tokens from '../components/heading.json'
+import tokens from '../tokens/heading.json'
 import { token } from './tokens'
 
 /**
@@ -11,7 +11,7 @@ import { token } from './tokens'
  * is a muted gray.
  *
  * No styling values live here: every color, spacing, and type value is read
- * from `components/heading.json` and resolved to a CSS custom property.
+ * from `tokens/heading.json` and resolved to a CSS custom property.
  */
 export const Heading = ({
   variant = 'page',
