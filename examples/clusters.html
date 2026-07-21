@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CDS · Cluster Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300..700&family=Sometype+Mono:wght@400..600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Source of truth: generated from tokens/primitive.json + semantic.json -->
+    <link rel="stylesheet" href="../src/tokens.css" />
+    <style>
+      /* ── Page chrome ─────────────────────────────────────────────
+         Every visual value resolves to a token custom property from
+         src/tokens.css. Nothing is hand-authored here. */
+      :root {
+        /* Component token not compiled into the generated tokens.css,
+           mirrored here so the standalone page stays token-driven.
+           Source: tokens/breadcrumbs.json. */
+        --breadcrumbs-letter-spacing: 0.02em;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--colors-surface);
+        color: var(--colors-foreground);
+        font-family: var(--typography-body-fontFamily), ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .page {
+        padding: var(--spacing-12) var(--spacing-8);
+      }
+
+      /* ── Breadcrumbs ─────────────────────────────────────────── */
+      .breadcrumbs {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.375rem;
+        margin-bottom: var(--spacing-6);
+        font-family: var(--typography-family-mono-fontFamily), ui-monospace, monospace;
+        font-size: 0.8125rem;
+        font-weight: var(--typography-weight-semibold-fontWeight);
+        line-height: 0.4rem;
+        letter-spacing: var(--breadcrumbs-letter-spacing);
+        text-transform: uppercase;
+      }
+      .breadcrumbs a,
+      .breadcrumbs span {
+        color: var(--colors-cds-neutral-500);
+      }
+      .breadcrumbs a {
+        text-decoration: none;
+        transition: color var(--motion-duration-fast) var(--motion-easing-standard);
+      }
+      .breadcrumbs a:hover {
+        text-decoration: underline;
+        text-decoration-color: var(--colors-cds-neutral-500);
+        text-underline-offset: 2px;
+      }
+      .breadcrumbs a:focus-visible {
+        outline: 2px solid var(--colors-focus);
+        outline-offset: 2px;
+        border-radius: var(--rounded-sm);
+      }
+      .breadcrumbs .sep {
+        user-select: none;
+      }
+
+      /* ── Heading ─────────────────────────────────────────────── */
+      .page-title {
+        margin: 0 0 var(--spacing-2);
+        font-family: var(--typography-page-title-fontFamily);
+        font-size: var(--typography-page-title-fontSize);
+        font-weight: var(--typography-page-title-fontWeight);
+        line-height: var(--typography-page-title-lineHeight);
+        letter-spacing: var(--typography-page-title-letterSpacing);
+        color: var(--colors-foreground);
+      }
+      .page-desc {
+        margin: 0 0 var(--spacing-6);
+        font-family: var(--typography-page-title-fontFamily);
+        font-size: var(--typography-body-medium-fontSize);
+        font-weight: var(--typography-body-medium-fontWeight);
+        line-height: 1.5;
+        letter-spacing: var(--typography-body-medium-letterSpacing);
+        color: var(--colors-foreground);
+      }
+      /* Heading with a trailing primary action, top-aligned opposite the title */
+      .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: var(--spacing-4);
+      }
+
+      /* Primary action — the view's single orange button */
+      .btn-primary {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+        height: 2.75rem;
+        padding-inline: var(--spacing-5);
+        background: var(--colors-interactive-55);
+        color: var(--colors-white);
+        border: none;
+        border-radius: var(--rounded-sm);
+        font-family: var(--typography-button-fontFamily);
+        font-size: var(--typography-button-fontSize);
+        font-weight: var(--typography-button-fontWeight);
+        line-height: var(--typography-button-lineHeight);
+        letter-spacing: var(--typography-button-letterSpacing);
+        text-transform: var(--typography-button-textTransform);
+        cursor: pointer;
+        transition: background-color var(--motion-duration-fast) var(--motion-easing-standard);
+      }
+      .btn-primary:hover {
+        background: var(--colors-interactive-60);
+      }
+      .btn-primary:focus-visible {
+        outline: 2px solid var(--colors-focus);
+        outline-offset: 2px;
+      }
+
+      /* ── Toolbar (count + search + filter) ───────────────────── */
+      .toolbar-count {
+        margin: 0 0 var(--spacing-2);
+        font-family: var(--typography-small-text-fontFamily);
+        font-size: var(--typography-small-text-fontSize);
+        font-weight: var(--typography-small-text-fontWeight);
+        line-height: var(--typography-small-text-lineHeight);
+        letter-spacing: var(--typography-small-text-letterSpacing);
+        color: var(--colors-foreground-muted);
+      }
+      .toolbar-row {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-2);
+      }
+
+      /* Search field — textbox tokens, grows to fill the row */
+      .search {
+        position: relative;
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .search svg {
+        position: absolute;
+        left: var(--spacing-4);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--colors-neutral-45);
+        pointer-events: none;
+      }
+      .search input {
+        width: 100%;
+        height: 2.75rem;
+        padding-inline: calc(var(--spacing-4) + var(--spacing-6)) var(--spacing-4);
+        background: var(--colors-white);
+        color: var(--colors-foreground);
+        border: var(--borders-width-default) solid var(--colors-cds-neutral-300);
+        border-radius: var(--rounded-sm);
+        font-family: var(--typography-input-fontFamily);
+        font-size: var(--typography-input-fontSize);
+        font-weight: var(--typography-input-fontWeight);
+        line-height: var(--typography-input-lineHeight);
+        letter-spacing: var(--typography-input-letterSpacing);
+        transition: border-color var(--motion-duration-fast) var(--motion-easing-standard);
+      }
+      .search input::placeholder {
+        color: var(--colors-neutral-45);
+      }
+      .search input:hover {
+        border-color: var(--colors-cds-neutral-500);
+      }
+      .search input:focus {
+        outline: none;
+        border-color: var(--colors-focus);
+        box-shadow: 0 0 0 2px var(--colors-focus);
+      }
+
+      /* Filter — secondary button, flush right */
+      .btn-secondary {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+        height: 2.75rem;
+        padding-inline: var(--spacing-5);
+        background: var(--colors-white);
+        color: var(--colors-foreground);
+        border: var(--borders-width-default) solid var(--colors-cds-neutral-300);
+        border-radius: var(--rounded-sm);
+        font-family: var(--typography-button-fontFamily);
+        font-size: var(--typography-button-fontSize);
+        font-weight: var(--typography-button-fontWeight);
+        line-height: var(--typography-button-lineHeight);
+        letter-spacing: var(--typography-button-letterSpacing);
+        text-transform: var(--typography-button-textTransform);
+        cursor: pointer;
+        transition: background-color var(--motion-duration-fast) var(--motion-easing-standard);
+      }
+      .btn-secondary:hover {
+        background: var(--colors-cds-neutral-100);
+      }
+      .btn-secondary:focus-visible {
+        outline: 2px solid var(--colors-accent);
+        outline-offset: 2px;
+      }
+
+      /* ── Table ───────────────────────────────────────────────── */
+      .table-scroll {
+        overflow-x: auto;
+      }
+      table {
+        min-width: 100%;
+        border-collapse: collapse;
+        background: var(--colors-neutral);
+        box-shadow: var(--shadows-default);
+        border-radius: var(--rounded-sm);
+        color: var(--colors-foreground);
+      }
+      thead tr {
+        height: 4rem;
+        border-bottom: var(--borders-width-thick) solid var(--colors-neutral-15);
+      }
+      th {
+        padding-block: var(--spacing-2);
+        padding-inline: var(--spacing-2);
+        vertical-align: middle;
+        text-align: left;
+        white-space: nowrap;
+        font-family: var(--typography-table-header-fontFamily);
+        font-size: var(--typography-table-header-fontSize);
+        font-weight: var(--typography-table-header-fontWeight);
+        line-height: var(--typography-table-header-lineHeight);
+        letter-spacing: var(--typography-table-header-letterSpacing);
+        text-transform: uppercase;
+        color: var(--colors-foreground);
+      }
+      th:first-child,
+      td:first-child {
+        padding-left: var(--spacing-4);
+      }
+      th:last-child,
+      td:last-child {
+        padding-right: var(--spacing-4);
+      }
+      th .th-inner {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+      }
+      th.sortable .th-inner {
+        cursor: pointer;
+      }
+      th.sortable:focus-visible {
+        outline: 2px solid var(--colors-accent);
+        outline-offset: -2px;
+      }
+      .sort-icon {
+        flex: none;
+        transition: opacity var(--motion-duration-fast) var(--motion-easing-standard),
+          color var(--motion-duration-fast) var(--motion-easing-standard);
+      }
+      /* Active column: its direction arrow is always shown. */
+      .sort-icon.active {
+        color: var(--colors-interactive-55);
+      }
+      /* Inactive columns: no icon at rest; on hover, preview the active
+         sort direction in the hover color. */
+      .sort-icon.inactive {
+        color: var(--colors-interactive-60);
+        opacity: 0;
+      }
+      th.sortable:hover .sort-icon.inactive {
+        opacity: 1;
+      }
+      th.sortable:hover .sort-icon.active {
+        color: var(--colors-interactive-60);
+      }
+      tbody tr {
+        height: 4rem;
+        border-bottom: var(--borders-width-default) solid var(--colors-neutral-15);
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      td {
+        padding-block: var(--spacing-2);
+        padding-inline: var(--spacing-2);
+        vertical-align: middle;
+        font-family: var(--typography-body-fontFamily);
+        font-size: var(--typography-body-fontSize);
+        line-height: 1.125rem;
+        font-weight: var(--typography-weight-regular-fontWeight);
+        color: var(--colors-foreground);
+        white-space: nowrap;
+      }
+      td.name {
+        font-weight: var(--typography-weight-bold-fontWeight);
+      }
+      .empty {
+        height: 10rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--colors-neutral-45);
+      }
+
+      /* ── Status pill (tinted ground + neutral text label, no icon) ── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--spacing-1) var(--spacing-2);
+        border-radius: var(--rounded-sm);
+        font-family: var(--typography-small-text-fontFamily);
+        font-size: var(--typography-small-text-fontSize);
+        font-weight: var(--typography-small-text-fontWeight);
+        line-height: var(--typography-small-text-lineHeight);
+        letter-spacing: var(--typography-small-text-letterSpacing);
+        color: var(--colors-neutral-60);
+        white-space: nowrap;
+      }
+      .badge--positive {
+        background: var(--colors-positive-10);
+      }
+      .badge--info {
+        background: var(--colors-info-15);
+      }
+      .badge--warning {
+        background: var(--colors-warning-15);
+      }
+      .badge--negative {
+        background: var(--colors-negative-15);
+      }
+
+      /* ── Row action links (Options column) ───────────────────── */
+      .row-actions {
+        display: flex;
+        gap: var(--spacing-4);
+      }
+      .table-link {
+        display: inline-flex;
+        align-items: center;
+        height: var(--spacing-5);
+        color: var(--colors-interactive-55);
+        text-decoration: none;
+        cursor: pointer;
+        border-bottom: var(--borders-width-medium) solid transparent;
+        font-family: var(--typography-button-fontFamily);
+        font-size: var(--typography-button-fontSize);
+        font-weight: var(--typography-button-fontWeight);
+        line-height: var(--typography-button-lineHeight);
+        letter-spacing: var(--typography-button-letterSpacing);
+        text-transform: uppercase;
+        transition: color var(--motion-duration-fast) var(--motion-easing-standard),
+          border-color var(--motion-duration-fast) var(--motion-easing-standard);
+      }
+      .table-link:hover {
+        border-bottom-color: var(--colors-interactive-55);
+      }
+      .table-link:focus-visible {
+        outline: 2px solid var(--colors-accent);
+        outline-offset: 2px;
+        border-radius: var(--rounded-sm);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="#">Clusters Management</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">Clusters</span>
+      </nav>
+
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Clusters</h1>
+          <p class="page-desc">Tracked cluster inventory in Training Management.</p>
+        </div>
+        <button type="button" class="btn-primary">
+          <!-- lucide: plus -->
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14" />
+            <path d="M12 5v14" />
+          </svg>
+          Add cluster
+        </button>
+      </header>
+
+      <section aria-labelledby="cluster-count">
+        <p class="toolbar-count" id="cluster-count" aria-live="polite"></p>
+        <div class="toolbar-row">
+          <div class="search">
+            <!-- lucide: search -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              type="search"
+              id="cluster-search"
+              placeholder="Search clusters"
+              aria-label="Search clusters by name, region, or environment"
+            />
+          </div>
+          <button type="button" class="btn-secondary">
+            <!-- lucide: filter -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            Filter
+          </button>
+        </div>
+      </section>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr id="head-row"></tr>
+          </thead>
+          <tbody id="body-rows"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <script>
+      // ── Data ──────────────────────────────────────────────────
+      const CLUSTERS = [
+        {
+          name: 'cascade-train-01',
+          region: 'us-west-2',
+          environment: 'Production',
+          status: 'Running',
+          computePools: 12,
+          storagePools: 4
+        },
+        {
+          name: 'meridian-train-02',
+          region: 'us-east-1',
+          environment: 'Staging',
+          status: 'Provisioning',
+          computePools: 6,
+          storagePools: 2
+        },
+        {
+          name: 'atlas-train-03',
+          region: 'eu-central-1',
+          environment: 'Development',
+          status: 'Degraded',
+          computePools: 3,
+          storagePools: 1
+        }
+      ];
+
+      const STATUS_INTENT = {
+        Running: 'positive',
+        Provisioning: 'info',
+        Degraded: 'negative'
+      };
+
+      const COLUMNS = [
+        { label: 'Cluster name', field: 'name', name: true },
+        { label: 'Region', field: 'region' },
+        { label: 'Environment', field: 'environment' },
+        { label: 'Status', field: 'status', kind: 'status' },
+        { label: 'Compute pools', field: 'computePools', numeric: true },
+        { label: 'Storage pools', field: 'storagePools', numeric: true },
+        { label: 'Options', field: 'options', noSort: true, kind: 'actions' }
+      ];
+
+      // ── Icons ─────────────────────────────────────────────────
+      // All icons are authentic lucide geometry (viewBox 24, 2px stroke,
+      // currentColor) per the DESIGN.md icon mandate.
+      const lucide = (paths, cls = '', size = 16) =>
+        `<svg${cls ? ` class="${cls}"` : ''} width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+
+      // Sort affordance: only the active column shows its direction arrow
+      // (ArrowDown = asc/alphabetical, ArrowUp = desc/reverse). Inactive columns
+      // hide the icon at rest and, on hover, preview the arrow in the SAME
+      // direction as the current active sort. 16px lucide.
+      const SORT_PATHS = {
+        asc: '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+        desc: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>'
+      };
+      const sortSvg = (isActive) =>
+        lucide(SORT_PATHS[sort.asc ? 'asc' : 'desc'], 'sort-icon ' + (isActive ? 'active' : 'inactive'), 16);
+
+      // ── State ─────────────────────────────────────────────────
+      let sort = { field: 'name', asc: true };
+      let query = '';
+
+      const headRow = document.getElementById('head-row');
+      const bodyRows = document.getElementById('body-rows');
+      const countEl = document.getElementById('cluster-count');
+      const searchEl = document.getElementById('cluster-search');
+
+      // ── Render ────────────────────────────────────────────────
+      function renderHead() {
+        headRow.innerHTML = COLUMNS.map((c) => {
+          if (c.noSort) return `<th scope="col"><div class="th-inner">${c.label}</div></th>`;
+          const isActive = sort.field === c.field;
+          const ariaSort = isActive ? (sort.asc ? 'ascending' : 'descending') : 'none';
+          return `<th scope="col" class="sortable" tabindex="0" role="button" data-field="${c.field}" aria-sort="${ariaSort}"><div class="th-inner">${c.label}${sortSvg(isActive)}</div></th>`;
+        }).join('');
+      }
+
+      function statusCell(status) {
+        const intent = STATUS_INTENT[status] || 'positive';
+        return `<span class="badge badge--${intent}">${status}</span>`;
+      }
+
+      function actionsCell() {
+        return `<div class="row-actions"><a class="table-link" href="#">Details</a><a class="table-link" href="#">Settings</a></div>`;
+      }
+
+      function visibleRows() {
+        const q = query.trim().toLowerCase();
+        let rows = CLUSTERS.filter(
+          (r) =>
+            !q ||
+            r.name.toLowerCase().includes(q) ||
+            r.region.toLowerCase().includes(q) ||
+            r.environment.toLowerCase().includes(q) ||
+            r.status.toLowerCase().includes(q)
+        );
+        rows = [...rows].sort((a, b) => {
+          const av = a[sort.field];
+          const bv = b[sort.field];
+          if (av === bv) return 0;
+          return (av > bv ? 1 : -1) * (sort.asc ? 1 : -1);
+        });
+        return rows;
+      }
+
+      function renderBody() {
+        const rows = visibleRows();
+        if (rows.length === 0) {
+          bodyRows.innerHTML = `<tr><td colspan="${COLUMNS.length}"><div class="empty">No clusters match your search.</div></td></tr>`;
+          return;
+        }
+        bodyRows.innerHTML = rows
+          .map(
+            (r) => `<tr>
+              <td class="name">${r.name}</td>
+              <td>${r.region}</td>
+              <td>${r.environment}</td>
+              <td>${statusCell(r.status)}</td>
+              <td>${r.computePools}</td>
+              <td>${r.storagePools}</td>
+              <td>${actionsCell()}</td>
+            </tr>`
+          )
+          .join('');
+      }
+
+      function renderCount() {
+        const n = visibleRows().length;
+        const total = CLUSTERS.length;
+        countEl.textContent =
+          query.trim() && n !== total
+            ? `Showing ${n} of ${total} tracked clusters`
+            : `Showing ${total} tracked clusters`;
+      }
+
+      function renderAll() {
+        renderHead();
+        renderBody();
+        renderCount();
+      }
+
+      // ── Events ────────────────────────────────────────────────
+      function onSort(field) {
+        sort = sort.field === field ? { field, asc: !sort.asc } : { field, asc: true };
+        renderAll();
+      }
+
+      headRow.addEventListener('click', (e) => {
+        const th = e.target.closest('th.sortable');
+        if (th) onSort(th.dataset.field);
+      });
+      headRow.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const th = e.target.closest('th.sortable');
+        if (th) {
+          e.preventDefault();
+          onSort(th.dataset.field);
+        }
+      });
+      searchEl.addEventListener('input', (e) => {
+        query = e.target.value;
+        renderBody();
+        renderCount();
+      });
+
+      renderAll();
+    </script>
+  </body>
+</html>
